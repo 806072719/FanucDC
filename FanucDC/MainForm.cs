@@ -5,6 +5,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
+using System.Timers;
 using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
 
@@ -21,17 +22,21 @@ namespace FanucDC
 
         private static ConcurrentDictionary<string, string> EQUIPMENT_ERROR_DICT = new ConcurrentDictionary<string, string>(); // 设备异常
 
-        private static ConcurrentDictionary<string, MultimediaTimerWapper> EQUIPMENT_TIMER_DICT = new ConcurrentDictionary<string, MultimediaTimerWapper>(); // 设备异常
+        private static ConcurrentDictionary<string, MicrosecondTimer> EQUIPMENT_TIMER_DICT = new ConcurrentDictionary<string, MicrosecondTimer>(); // 设备异常
 
         private static ConcurrentBag<string> ONLINE_EQUIPMENT = new ConcurrentBag<string>(); // 设备IP和设备状态
 
         private static System.Timers.Timer _timer;
+
+
+        private static System.Timers.Timer refreshTimer;
 
         public MainForm()
         {
             InitializeComponent();
             initData();
             startConnection();
+            refreshChooseTraceData();
         }
 
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -82,24 +87,16 @@ namespace FanucDC
                 }
                 string ip = row.Cells[1].Value.ToString();
                 string port = row.Cells[2].Value.ToString();
-                //var tim = new MicrosecondTimer();
+                var tim = new MicrosecondTimer();
 
-                //tim.Interval = 1000;
-                //tim.Elapsed += (sender, e) =>
-                //{
-                //    TraceDataCollection(ip);
-                //};
-                //tim.Enabled = true;
-
-                // 启动定时器
-                MultimediaTimerWapper multimediaTimer = new MultimediaTimerWapper();
-                multimediaTimer.Resolution = 1;
-                multimediaTimer.Timer += (sender, e) =>
+                tim.Interval = 1000;
+                tim.Elapsed += (sender, e) =>
                 {
                     TraceDataCollection(ip);
                 };
-                EQUIPMENT_TIMER_DICT.TryAdd(ip, multimediaTimer);
-                multimediaTimer.Start(1000, false);
+                tim.Enabled = true;
+
+                EQUIPMENT_TIMER_DICT.TryAdd(ip, tim);
             }
         }
 
@@ -228,21 +225,30 @@ namespace FanucDC
                         trace.Status = run;
                         trace.Alarm = Alarm;
                     }
+
+                    trace.Ip = ip;
+                    EQUIPMENT_DATA_DICT[ip] = trace;
+
+
+
                     int status = 0;
                     if (EQUIPMENT_STATUS_DICT.TryGetValue(ip, out status))
                     {
                         // 如果两次状态不相等
                         if (status.CompareTo(trace.Status) != 0)
                         {
-                            LogInfo("状态变化 之前状态 " + status + " 当前状态 " + trace.Status);
+                            LogInfo(ip + "状态变化 之前状态 " + status + " 当前状态 " + trace.Status);
                             EQUIPMENT_STATUS_DICT[ip] = trace.Status;
-
                         }
                     }
                     else
                     {
                         EQUIPMENT_STATUS_DICT.TryAdd(ip, trace.Status);
                     }
+
+
+
+                   
 
 
                     pojo.Trace value = null;
@@ -261,9 +267,8 @@ namespace FanucDC
                     else
                     {
                         EQUIPMENT_DATA_DICT.TryAdd(ip, trace);
-                        
                     }
-
+                 
 
 
                     // 如果在线设备包括本IP
@@ -279,7 +284,7 @@ namespace FanucDC
                 else
                 {
                     LogError($" [{Thread.CurrentThread.ManagedThreadId}] {ip} 异常代码： {ret} ");
-          
+                    refreshOnline(ip, ret);
                     // 如果本设备在线
                     //if (ONLINE_EQUIPMENT.Contains(ip))
                     //{
@@ -289,7 +294,7 @@ namespace FanucDC
                     //    {
                     //        refreshOnline(ip, ret);
                     //    }
-                    //} 
+                    //}
                 }
             }
             finally
@@ -301,11 +306,42 @@ namespace FanucDC
 
         public void insertSql(string text)
         {
-            Task insertTask = new Task(() => {
+            Task insertTask = new Task(() =>
+            {
                 SqlServerPool.ExecuteNonQuery(text);
             });
         }
 
+
+
+        public void refreshChooseTraceData()
+        {
+            refreshTimer = new System.Timers.Timer(1000);
+            // 设置Elapsed事件处理程序
+            refreshTimer.Elapsed += refreshTraceData;
+            // 启用定时器
+            refreshTimer.Enabled = true;
+        }
+
+        public void refreshTraceData(object? sender, ElapsedEventArgs e)
+        {
+            if (lastIp == null || "".Equals(lastIp))
+            {
+                return;
+            }
+            pojo.Trace outVal = null;
+            EQUIPMENT_DATA_DICT.TryGetValue(lastIp, out outVal);
+            if (outVal != null)
+            {
+                LogInfo(outVal.ToString());
+                refreshData(outVal);
+            }
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 
 

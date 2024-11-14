@@ -1,4 +1,6 @@
-﻿namespace FanucDC
+﻿using AntdUI;
+
+namespace FanucDC
 {
     partial class LoginForm
     {
@@ -28,79 +30,82 @@
         /// </summary>
         private void InitializeComponent()
         {
-            loginBtn = new Button();
-            cancelBtn = new Button();
-            usernameLabel = new Label();
-            passwordLabel = new Label();
-            usernameText = new TextBox();
-            passwordText = new TextBox();
+            usernameLabel = new AntdUI.Label();
+            passwordLabel = new AntdUI.Label();
+            usernameText = new Input();
+            passwordText = new Input();
+            button2 = new AntdUI.Button();
+            cancelBtn = new AntdUI.Button();
             SuspendLayout();
-            // 
-            // loginBtn
-            // 
-            loginBtn.Location = new Point(163, 188);
-            loginBtn.Name = "loginBtn";
-            loginBtn.Size = new Size(75, 23);
-            loginBtn.TabIndex = 0;
-            loginBtn.Text = "登录";
-            loginBtn.UseVisualStyleBackColor = true;
-            loginBtn.Click += loginBtn_Click;
-            // 
-            // cancelBtn
-            // 
-            cancelBtn.Location = new Point(55, 188);
-            cancelBtn.Name = "cancelBtn";
-            cancelBtn.Size = new Size(75, 23);
-            cancelBtn.TabIndex = 1;
-            cancelBtn.Text = "取消";
-            cancelBtn.UseVisualStyleBackColor = true;
             // 
             // usernameLabel
             // 
-            usernameLabel.AutoSize = true;
-            usernameLabel.Location = new Point(55, 56);
+            usernameLabel.Location = new Point(33, 53);
             usernameLabel.Name = "usernameLabel";
-            usernameLabel.Size = new Size(44, 17);
-            usernameLabel.TabIndex = 2;
+            usernameLabel.Size = new Size(75, 38);
+            usernameLabel.TabIndex = 6;
             usernameLabel.Text = "用户名";
-            usernameLabel.Click += label1_Click;
+            usernameLabel.TextAlign = ContentAlignment.MiddleRight;
+            usernameLabel.Click += usernameLabel_Click;
             // 
             // passwordLabel
             // 
-            passwordLabel.AutoSize = true;
-            passwordLabel.Location = new Point(55, 105);
+            passwordLabel.Location = new Point(33, 105);
             passwordLabel.Name = "passwordLabel";
-            passwordLabel.Size = new Size(32, 17);
-            passwordLabel.TabIndex = 3;
+            passwordLabel.Size = new Size(75, 35);
+            passwordLabel.TabIndex = 7;
             passwordLabel.Text = "密码";
+            passwordLabel.TextAlign = ContentAlignment.MiddleRight;
             // 
             // usernameText
             // 
             usernameText.Location = new Point(114, 53);
             usernameText.Name = "usernameText";
-            usernameText.Size = new Size(100, 23);
-            usernameText.TabIndex = 4;
+            usernameText.Size = new Size(124, 38);
+            usernameText.TabIndex = 8;
             // 
             // passwordText
             // 
             passwordText.Location = new Point(114, 105);
-            passwordText.MaxLength = 14;
             passwordText.Name = "passwordText";
             passwordText.PasswordChar = '*';
-            passwordText.Size = new Size(100, 23);
-            passwordText.TabIndex = 5;
+            passwordText.Size = new Size(124, 35);
+            passwordText.TabIndex = 9;
+            // 
+            // button2
+            // 
+            button2.AutoSizeMode = TAutoSize.Auto;
+            button2.Location = new Point(181, 170);
+            button2.Name = "button2";
+            button2.Shape = TShape.Round;
+            button2.Size = new Size(57, 41);
+            button2.TabIndex = 11;
+            button2.Text = "登录";
+            button2.Type = TTypeMini.Primary;
+            button2.Click += button2_Click;
+            // 
+            // cancelBtn
+            // 
+            cancelBtn.AutoSizeMode = TAutoSize.Auto;
+            cancelBtn.Location = new Point(114, 170);
+            cancelBtn.Name = "cancelBtn";
+            cancelBtn.Shape = TShape.Round;
+            cancelBtn.Size = new Size(57, 41);
+            cancelBtn.TabIndex = 12;
+            cancelBtn.Text = "取消";
+            cancelBtn.Type = TTypeMini.Warn;
             // 
             // LoginForm
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(292, 223);
+            Controls.Add(cancelBtn);
+            Controls.Add(button2);
             Controls.Add(passwordText);
             Controls.Add(usernameText);
             Controls.Add(passwordLabel);
             Controls.Add(usernameLabel);
-            Controls.Add(cancelBtn);
-            Controls.Add(loginBtn);
             MaximizeBox = false;
             Name = "LoginForm";
             Text = "LoginForm";
@@ -110,12 +115,11 @@
         }
 
         #endregion
-
-        private Button loginBtn;
-        private Button cancelBtn;
-        private Label usernameLabel;
-        private Label passwordLabel;
-        private TextBox usernameText;
-        private TextBox passwordText;
+        private AntdUI.Label usernameLabel;
+        private AntdUI.Label passwordLabel;
+        private AntdUI.Input usernameText;
+        private AntdUI.Input passwordText;
+        private AntdUI.Button button2;
+        private AntdUI.Button cancelBtn;
     }
 }

@@ -6,7 +6,15 @@ namespace FanucDC
         static void Main()
         {
             ApplicationConfiguration.Initialize();
-            Application.Run(new LoginForm());
+
+            AntdUI.Localization.DefaultLanguage = "zh-CN";
+            AntdUI.Config.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
+
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            var loginForm = new LoginForm();
+
+            Application.Run(loginForm);
             //Application.Run(new MainForm());
         }
     }

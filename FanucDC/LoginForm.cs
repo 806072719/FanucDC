@@ -28,7 +28,44 @@ namespace FanucDC
 
         }
 
-        private void loginBtn_Click(object sender, EventArgs e)
+        //private void loginBtn_Click(object sender, EventArgs e)
+        //{
+        //    string username = usernameText.Text;
+        //    if (username == null || "".Equals(username))
+        //    {
+        //        MessageBox.Show("用户名不能为空", "异常", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        //        return;
+        //    }
+        //    string password = passwordText.Text;
+        //    if (password == null || "".Equals(password))
+        //    {
+        //        MessageBox.Show("密码不能为空", "异常", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        //        return;
+        //    }
+
+        //    if ("jcjm".Equals(username) && "jm1234".Equals(password))
+        //    {
+        //        MainForm ui = new MainForm();
+        //        this.Visible = false;
+        //        ui.ShowDialog();//此处不可用Show()
+        //        this.Dispose();
+        //        this.Close();
+        //        //this.Close();
+        //    }
+        //    else
+        //    {
+        //        MessageBox.Show("用户名密码错误", "异常", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        //    }
+        //}
+
+ 
+
+        private void usernameLabel_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button2_Click(object sender, EventArgs e)
         {
             string username = usernameText.Text;
             if (username == null || "".Equals(username))
@@ -45,11 +82,15 @@ namespace FanucDC
 
             if ("jcjm".Equals(username) && "jm1234".Equals(password))
             {
-                MainForm mainForm = new MainForm();
-                mainForm.ShowDialog();
+                //MainForm ui = new MainForm();
+                IndexForm ui = new IndexForm();
+                this.Visible = false;
+                ui.ShowDialog();//此处不可用Show()
+                this.Dispose();
                 this.Close();
                 //this.Close();
-            } else
+            }
+            else
             {
                 MessageBox.Show("用户名密码错误", "异常", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }

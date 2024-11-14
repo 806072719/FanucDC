@@ -8,7 +8,7 @@ using System.Xml.Linq;
 
 namespace FanucDC.pojo
 {
-    internal class Trace
+    public class Trace
     {
         private string? programName; // 程序名
 
@@ -28,6 +28,8 @@ namespace FanucDC.pojo
 
         private DateTime datetime; // 当前时间
 
+        private String ip; //ip
+
         public string? ProgramName { get => programName; set => programName = value; }
         public int CurrentCount { get => currentCount; set => currentCount = value; }
         public int TotalCount { get => totalCount; set => totalCount = value; }
@@ -37,12 +39,11 @@ namespace FanucDC.pojo
         public short Alarm { get => alarm; set => alarm = value; }
         public short Status { get => status; set => status = value; }
         public DateTime Datetime { get => datetime; set => datetime = value; }
-
-
+        public string Ip { get => ip; set => ip = value; }
 
         public override string ToString()
         {
-            string r = $" 当前生产数量 {currentCount} 总生产数量 {totalCount} 开机时间 {openTime} 运行时间 {runTime} 循环时间 {circleTime} 状态  {status}";
+            string r = $" 当前生产数量 {CurrentCount} 总生产数量 {TotalCount} 开机时间 {OpenTime} 运行时间 {RunTime} 循环时间 {CircleTime} 状态  {Status}";
             return r;
         }
     }
