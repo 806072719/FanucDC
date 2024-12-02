@@ -30,6 +30,8 @@ namespace FanucDC
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LoginForm));
             usernameLabel = new AntdUI.Label();
             passwordLabel = new AntdUI.Label();
             usernameText = new Input();
@@ -95,6 +97,10 @@ namespace FanucDC
             cancelBtn.Text = "取消";
             cancelBtn.Type = TTypeMini.Warn;
             // 
+            // timer1
+            // 
+
+            // 
             // LoginForm
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
@@ -106,10 +112,10 @@ namespace FanucDC
             Controls.Add(usernameText);
             Controls.Add(passwordLabel);
             Controls.Add(usernameLabel);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
             Name = "LoginForm";
-            Text = "LoginForm";
-            Load += LoginForm_Load;
+            Text = "登录";
             ResumeLayout(false);
             PerformLayout();
         }

@@ -12,6 +12,8 @@ namespace FanucDC.Models
     {
         private bool selected = false;
 
+        private string code;
+
         private string name;
 
         private string ip;
@@ -24,6 +26,17 @@ namespace FanucDC.Models
 
         private int ret;
 
+
+        public string Code
+        {
+            get { return code; }
+            set
+            {
+                if (code == value) return;
+                code = value;
+                OnPropertyChanged(nameof(Code));
+            }
+        }
 
         public int Ret
         {

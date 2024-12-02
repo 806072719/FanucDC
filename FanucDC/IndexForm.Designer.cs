@@ -1,5 +1,4 @@
 ﻿using AntdUI;
-using AntdUIDemo.Views;
 
 namespace FanucDC
 {
@@ -31,6 +30,7 @@ namespace FanucDC
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(IndexForm));
             logPanel = new AntdUI.Panel();
             info = new ListBox();
             listPanel = new AntdUI.Panel();
@@ -126,6 +126,7 @@ namespace FanucDC
             addBtn.TabIndex = 1;
             addBtn.Text = "添加设备";
             addBtn.Type = TTypeMini.Primary;
+            addBtn.Click += addBtn_Click;
             // 
             // table1
             // 
@@ -393,8 +394,9 @@ namespace FanucDC
             Controls.Add(infoPanel);
             Controls.Add(listPanel);
             Controls.Add(logPanel);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "IndexForm";
-            Text = "IndexForm";
+            Text = "Fanuc DC";
             logPanel.ResumeLayout(false);
             listPanel.ResumeLayout(false);
             infoPanel.ResumeLayout(false);

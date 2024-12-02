@@ -1,31 +1,21 @@
 ﻿using AntdUI;
+using FanucDC.db;
 using FanucDC.fanuc;
 using FanucDC.Models;
-using FanucDC.pojo;
-using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Timers;
-using System.Windows.Forms;
-using static System.Net.Mime.MediaTypeNames;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace FanucDC
 {
     public partial class IndexForm : Form
     {
-        private string files = "D:\\logs\\" + DateTime.Now.ToString("yyyy-MM-dd") + ".log";
-        private static ConcurrentDictionary<string, MicrosecondTimer> EQUIPMENT_TIMER_DICT = new ConcurrentDictionary<string, MicrosecondTimer>(); // 设备异常
-        private static ConcurrentDictionary<string, Trace> EQUIPMENT_DATA_DICT = new ConcurrentDictionary<string,Trace>(); // 设备数据
+        private string files = "C:\\fanucdc\\logs\\" + DateTime.Now.ToString("yyyy-MM-dd") + ".log";
+        private static ConcurrentDictionary<string, MicrosecondTimer> EQUIPMENT_TIMER_DICT = new ConcurrentDictionary<string, MicrosecondTimer>(); // 设备的timer
+        private static ConcurrentDictionary<string, pojo.Trace> EQUIPMENT_DATA_DICT = new ConcurrentDictionary<string, pojo.Trace>(); // 设备数据
 
         private string lastIp;
-        
+
         AntList<Equipment> antList;
 
         private static System.Timers.Timer refreshTimer;
@@ -37,6 +27,7 @@ namespace FanucDC
             initData();
             initShowSelect();
             startConnection();
+            LogInfo("开始绑定事件");
             BindEventHandler();
         }
 
@@ -44,30 +35,49 @@ namespace FanucDC
         {
             foreach (var equipment in antList)
             {
-                var tim = new MicrosecondTimer();
-
                 var ip = equipment.Ip;
                 var port = equipment.Port;
+                //PrecisionTimer.Timer mTimer = new PrecisionTimer.Timer();
+                //mTimer.Period = 200;
+                //mTimer.Tick += new EventHandler((sender, e) =>
+                //{
+                //    TraceDataCollection(ip, port);
+                //});
+                //mTimer.Start();
 
-                LogInfo(ip + " " + port + " 开始连接");
+                var tim = new MicrosecondTimer();
 
-                tim.Interval = 1000;
+
+                tim.Interval = 500;
                 tim.Elapsed += (sender, e) =>
                 {
-                    TraceDataCollection(ip,port);
+                    //LogInfo("开始读取" + ip + " " + port);
+                    TraceDataCollection(ip, port);
+                    //LogInfo("读取结束" + ip + " " + port);
                 };
                 tim.Enabled = true;
+   
+                //System.Timers.Timer tm = new System.Timers.Timer(1000);//实例化Timer类，设置间隔时间为1000毫秒；
+                //tm.Elapsed += (sender, e) =>
+                //{
+                //    TraceDataCollection(ip, port);
+                //};
+                //tm.AutoReset = true;//设置是执行一次（false）还是一直执行(true)；
+                //tm.Enabled = true;//是否执行System.Timers.Timer.Elapsed事件；
 
                 EQUIPMENT_TIMER_DICT.TryAdd(ip, tim);
+                //EQUIPMENT_TIMER_DICT.TryAdd(ip, mTimer);
             }
         }
 
-        private void TraceDataCollection(string ip,short port)
+ 
+
+        public void TraceDataCollection(String ip,short port)
         {
             var fanucH = new FanucH();
-            short ret = FanucDriver.cnc_allclibhndl3(ip, Convert.ToUInt16(port), 5, out fanucH.h);
             try
             {
+                short ret = FanucDriver.cnc_allclibhndl3(ip, Convert.ToUInt16(port), 5, out fanucH.h);
                 if (ret == FanucDriver.EW_OK)
                 {
                     pojo.Trace trace = new pojo.Trace();
@@ -157,33 +167,38 @@ namespace FanucDC
                     }
 
                     trace.Ip = ip;
-                    EQUIPMENT_DATA_DICT[ip] = trace;
                     int status = 0;
                     pojo.Trace value = null;
-                    if (EQUIPMENT_DATA_DICT.TryGetValue(ip, out value))
+                    EQUIPMENT_DATA_DICT.TryGetValue(ip, out value);
+                    if (value != null)
                     {
                         // 说明生产数量没有变化
-                        if (value.CurrentCount.CompareTo(trace.CurrentCount) == 0)
-                        {
-                        }
-                        else
+                        //if (value.CurrentCount.CompareTo(trace.CurrentCount) == 0)
+                        //{
+                        //}
+                        //else
+                        //{
+                        //    EQUIPMENT_DATA_DICT[ip] = trace;
+                        //}
+                        if (value.CurrentCount != trace.CurrentCount)
                         {
                             EQUIPMENT_DATA_DICT[ip] = trace;
+                            insertTrace2DB(trace);
+                            LogInfo(ip + " " + port + "数量切换，写入数据");
                         }
-                        if (value.Status != trace.Status)
+                        else if (value.Status != trace.Status)
                         {
-                            LogInfo("状态发生变化 之前" + value.Status + "现在 " + trace.Status);
+                            EQUIPMENT_DATA_DICT[ip] = trace;
+                            insertTrace2DB(trace);
+                            LogInfo(ip + " " + port + "状态切换,写入数据");
                         }
                     }
                     else
                     {
-                        EQUIPMENT_DATA_DICT.TryAdd(ip, trace);
+                        insertTrace2DB(trace);
+                        EQUIPMENT_DATA_DICT[ip] = trace;
+                        LogInfo(ip + " " + port + "写入数据");
                     }
-
-                    
-
-
-
                     // 如果在线设备包括本IP
                     refreshOnline(ip, ret);
                 }
@@ -191,8 +206,10 @@ namespace FanucDC
                 {
                     LogError($" [{Thread.CurrentThread.ManagedThreadId}] {ip} 异常代码： {ret} ");
                     refreshOnline(ip, ret);
-                 
                 }
+            } catch (Exception e)
+            {
+                LogError(e.ToString());
             }
             finally
             {
@@ -200,7 +217,21 @@ namespace FanucDC
             }
         }
 
-        private void refreshOnline(string ip,int ret)
+
+        public void insertTrace2DB(pojo.Trace trace)
+        {
+            string sql = " insert into dbo._trace_info(program_name,status,product_num,ip) values('{0}',{1},{2},'{3}')";
+            string exec = string.Format(sql, trace.ProgramName, trace.Status, trace.CurrentCount, trace.Ip);
+            CustomThreadPool.QueueWorkItem(new WaitCallback(DoWork), exec);
+        }
+
+        private static void DoWork(object state)
+        {
+            string exec = (string)state;
+            SqlServerPool.ExecuteNonQuery(exec);
+        }
+
+        private void refreshOnline(string ip, int ret)
         {
             foreach (var equipment in antList)
             {
@@ -229,7 +260,7 @@ namespace FanucDC
             {
                 return;
             }
-            Trace outVal = null;
+            pojo.Trace outVal = null;
             EQUIPMENT_DATA_DICT.TryGetValue(lastIp, out outVal);
             if (outVal != null)
             {
@@ -242,7 +273,7 @@ namespace FanucDC
             }
         }
 
-        private void showTrace(Trace outVal)
+        private void showTrace(pojo.Trace outVal)
         {
             if (this.IsDisposed)
             {
@@ -250,7 +281,8 @@ namespace FanucDC
             }
             if (this.InvokeRequired && !this.IsDisposed)
             {
-                this.Invoke(new Action(() => {
+                this.Invoke(new Action(() =>
+                {
                     showTrace(outVal);
                 }));
                 return;
@@ -266,7 +298,8 @@ namespace FanucDC
                 circleText.Text = "";
                 statusText.Text = "";
                 alarmText.Text = "";
-            } else
+            }
+            else
             {
                 ipText.Text = outVal.Ip;
                 programText.Text = outVal.ProgramName;
@@ -278,8 +311,6 @@ namespace FanucDC
                 statusText.Text = outVal.Status.ToString();
                 alarmText.Text = outVal.Alarm.ToString();
             }
-
-
         }
 
         public void LogInfo(string text)
@@ -305,7 +336,8 @@ namespace FanucDC
             }
             if (this.InvokeRequired && !this.IsDisposed)
             {
-                this.Invoke(new Action(() => {
+                this.Invoke(new Action(() =>
+                {
                     Log(text, color);
                 }));
                 return;
@@ -320,7 +352,6 @@ namespace FanucDC
                 stream.Close();
                 stream.Dispose();
             }
-
             using (StreamWriter writer = new StreamWriter(logFilePath, append: true))
             {
                 writer.WriteLine(message);
@@ -437,7 +468,7 @@ namespace FanucDC
                     new CellButton(Guid.NewGuid().ToString(),"编辑",TTypeMini.Primary),
                     new CellButton(Guid.NewGuid().ToString(),"删除",TTypeMini.Error) },
             };
-          
+
 
         }
 
@@ -462,11 +493,11 @@ namespace FanucDC
                 //        }
                 //        else if (item.Text == "编辑")
                 //        {
-                         
+
                 //        }
                 //        else if (item.Text == "删除")
                 //        {
-                          
+
                 //        }
                 //        else
                 //        {
@@ -569,36 +600,96 @@ namespace FanucDC
         private void initData()
         {
             antList = new AntList<Equipment>(10);
+            string sql = "select equipment_name,equipment_ip,equipment_port from _equipment_info order by equipment_code ";
 
-            antList.Add(new Equipment
+            //List<Equipment> result2 = SqlServerPool.QueryList<Equipment>(sql);
+
+            List<object[]> result = SqlServerPool.ExecuteQueryList(sql);
+            if (result != null && result.Count > 0)
             {
-                Name = "发那科设备01",
-                Ip = "192.168.76.145",
-                Port = 8193,
-                Connect = false,
-            });
-            antList.Add(new Equipment
-            {
-                Name = "发那科设备02",
-                Ip = "192.168.76.146",
-                Port = 8193,
-                Connect = false,
-            });
-            antList.Add(new Equipment
-            {
-                Name = "发那科设备03",
-                Ip = "192.168.76.147",
-                Port = 8193,
-                Connect = false,
-            });
-            antList.Add(new Equipment
-            {
-                Name = "发那科设备04",
-                Ip = "192.168.76.148",
-                Port = 8193,
-                Connect = false,
-            });
+                foreach (object[] row in result)
+                {
+                    Equipment equipment = new Equipment();
+                    equipment.Name = row.GetValue(0).ToString();
+                    equipment.Ip = row.GetValue(1).ToString();
+                    equipment.Port = short.Parse(row.GetValue(2).ToString());
+                    equipment.Connect = false;
+                    antList.Add(equipment);
+                }
+            }
             table1.Binding<Equipment>(antList);
+        }
+
+        private void addBtn_Click(object sender, EventArgs e)
+        {
+            AddForm ui = new AddForm();
+            ui.StartPosition = FormStartPosition.CenterParent;
+            ui.ShowDialog();
+            if (ui.isOk)
+            {
+                Equipment equipment = ui.equipment;
+                if (equipment != null)
+                {
+                    // 加入列表
+                    equipment.Connect = false;
+                    antList.Add(equipment);
+                    // 加入线程池
+
+                    var tim = new MicrosecondTimer();
+                    tim.Interval = 500;
+                    tim.Elapsed += (sender, e) =>
+                    {
+                        //LogInfo("开始读取" + equipment.Ip + " " + equipment.Port);
+                        TraceDataCollection(equipment.Ip, equipment.Port);
+                        //LogInfo("读取结束" + ip + " " + port);
+                    };
+                    tim.Enabled = true;
+                    EQUIPMENT_TIMER_DICT.TryAdd(equipment.Ip, tim);
+                }
+            }
+        }
+
+        private void delBtn_Click(object sender, EventArgs e)
+        {
+            if (antList.Count == 0 || !antList.Any(x => x.Selected))
+            {
+                AntdUI.Message.warn(this, "请选择要删除的行！", autoClose: 3);
+                return;
+            }
+            if (MessageBox.Show("确认要删除选择的数据吗?", "确认删除", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            {
+                //使用反转for循环删除
+                for (int i = antList.Count - 1; i >= 0; i--)
+                {
+                    if (antList[i].Selected)
+                    {
+                        // 根据ip删除数据库
+                        string ipaddr = antList[i].Ip;
+                        string sql = " delete from dbo._equipment_info where ip = '{0}'";
+                        string exec = string.Format(sql, ipaddr);
+
+                        var result = EQUIPMENT_TIMER_DICT[ipaddr];
+                        if (result != null)
+                        {
+                            //result.Enabled = false;
+                            //result.Dispose();
+                            //MicrosecondTimer timer;
+                            //EQUIPMENT_TIMER_DICT.TryRemove(ipaddr, out timer);
+
+                            //pojo.Trace trace = null;
+                            //EQUIPMENT_DATA_DICT.TryRemove(ipaddr, out trace);
+                            //if (lastIp == ipaddr)
+                            //{
+                            //    lastIp = "";
+                            //}
+                        }
+                        antList.Remove(antList[i]);
+                    }
+                }
+            }
+
+             
+      
         }
     }
 }
