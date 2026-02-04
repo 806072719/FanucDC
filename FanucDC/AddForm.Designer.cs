@@ -1,4 +1,6 @@
-﻿namespace FanucDC
+﻿using AntdUI;
+
+namespace FanucDC
 {
     partial class AddForm
     {
@@ -43,88 +45,104 @@
             // 
             // codeLabel
             // 
-            codeLabel.Location = new Point(12, 12);
+            codeLabel.Font = new Font("Microsoft YaHei UI", 9F);
+            codeLabel.ForeColor = Color.FromArgb(80, 80, 80);
+            codeLabel.Location = new Point(30, 30);
             codeLabel.Name = "codeLabel";
-            codeLabel.Size = new Size(75, 35);
+            codeLabel.Size = new Size(80, 36);
             codeLabel.TabIndex = 0;
             codeLabel.Text = "设备代码";
+            codeLabel.TextAlign = ContentAlignment.MiddleRight;
             codeLabel.Click += label1_Click;
             // 
             // codeText
             // 
-            codeText.Location = new Point(90, 12);
+            codeText.Location = new Point(116, 30);
             codeText.Name = "codeText";
-            codeText.Size = new Size(186, 35);
+            codeText.Size = new System.Drawing.Size(180, 36);
             codeText.TabIndex = 1;
             // 
             // nameText
             // 
-            nameText.Location = new Point(90, 53);
+            nameText.Location = new Point(116, 76);
             nameText.Name = "nameText";
-            nameText.Size = new Size(186, 35);
+            nameText.Size = new System.Drawing.Size(180, 36);
             nameText.TabIndex = 3;
             // 
             // nameLabel
             // 
-            nameLabel.Location = new Point(12, 53);
+            nameLabel.Font = new Font("Microsoft YaHei UI", 9F);
+            nameLabel.ForeColor = Color.FromArgb(80, 80, 80);
+            nameLabel.Location = new Point(30, 76);
             nameLabel.Name = "nameLabel";
-            nameLabel.Size = new Size(75, 35);
+            nameLabel.Size = new Size(80, 36);
             nameLabel.TabIndex = 2;
             nameLabel.Text = "设备名称";
+            nameLabel.TextAlign = ContentAlignment.MiddleRight;
             // 
             // ipText
             // 
-            ipText.Location = new Point(90, 94);
+            ipText.Location = new Point(116, 122);
             ipText.Name = "ipText";
-            ipText.Size = new Size(186, 35);
+            ipText.Size = new System.Drawing.Size(180, 36);
             ipText.TabIndex = 5;
             // 
             // ipLabel
             // 
-            ipLabel.Location = new Point(12, 94);
+            ipLabel.Font = new Font("Microsoft YaHei UI", 9F);
+            ipLabel.ForeColor = Color.FromArgb(80, 80, 80);
+            ipLabel.Location = new Point(30, 122);
             ipLabel.Name = "ipLabel";
-            ipLabel.Size = new Size(75, 35);
+            ipLabel.Size = new Size(80, 36);
             ipLabel.TabIndex = 4;
             ipLabel.Text = "设备IP";
+            ipLabel.TextAlign = ContentAlignment.MiddleRight;
             // 
             // portText
             // 
-            portText.Location = new Point(90, 135);
+            portText.Location = new Point(116, 168);
             portText.Name = "portText";
-            portText.Size = new Size(186, 35);
+            portText.Size = new System.Drawing.Size(180, 36);
             portText.TabIndex = 7;
             // 
             // port
             // 
-            port.Location = new Point(12, 135);
+            port.Font = new Font("Microsoft YaHei UI", 9F);
+            port.ForeColor = Color.FromArgb(80, 80, 80);
+            port.Location = new Point(30, 168);
             port.Name = "port";
-            port.Size = new Size(75, 35);
-            port.TabIndex = 6;
+            port.Size = new Size(80, 36);
             port.Text = "设备端口";
+            port.TextAlign = ContentAlignment.MiddleRight;
             // 
             // saveBtn
             // 
-            saveBtn.Location = new Point(164, 176);
+            saveBtn.Font = new Font("Microsoft YaHei UI", 9F, FontStyle.Bold);
+            saveBtn.Location = new Point(181, 220);
             saveBtn.Name = "saveBtn";
-            saveBtn.Size = new Size(75, 40);
+            saveBtn.Size = new Size(90, 40);
             saveBtn.TabIndex = 8;
             saveBtn.Text = "保存";
+            saveBtn.Type = TTypeMini.Primary;
             saveBtn.Click += saveBtn_Click;
             // 
             // cancelBtn
             // 
-            cancelBtn.Location = new Point(47, 176);
+            cancelBtn.Font = new Font("Microsoft YaHei UI", 9F);
+            cancelBtn.Location = new Point(70, 220);
             cancelBtn.Name = "cancelBtn";
-            cancelBtn.Size = new Size(75, 40);
+            cancelBtn.Size = new Size(90, 40);
             cancelBtn.TabIndex = 9;
             cancelBtn.Text = "取消";
+            cancelBtn.Type = TTypeMini.Default;
             cancelBtn.Click += cancelBtn_Click;
             // 
             // AddForm
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(288, 219);
+            BackColor = Color.White;
+            ClientSize = new Size(326, 280);
             Controls.Add(cancelBtn);
             Controls.Add(saveBtn);
             Controls.Add(portText);
@@ -135,8 +153,12 @@
             Controls.Add(nameLabel);
             Controls.Add(codeText);
             Controls.Add(codeLabel);
+            FormBorderStyle = FormBorderStyle.FixedSingle;
             Icon = (Icon)resources.GetObject("$this.Icon");
+            MaximizeBox = false;
+            MinimizeBox = false;
             Name = "AddForm";
+            StartPosition = FormStartPosition.CenterParent;
             Text = "新增";
             ResumeLayout(false);
         }

@@ -1,4 +1,6 @@
 ﻿using AntdUI;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace FanucDC
 {
@@ -13,14 +15,14 @@ namespace FanucDC
         /// Clean up any resources being used.
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && (components != null))
-            {
-                components.Dispose();
-            }
-            base.Dispose(disposing);
-        }
+        //protected override void Dispose(bool disposing)
+        //{
+        //    if (disposing && (components != null))
+        //    {
+        //        components.Dispose();
+        //    }
+        //    base.Dispose(disposing);
+        //}
 
         #region Windows Form Designer generated code
 
@@ -63,66 +65,84 @@ namespace FanucDC
             programLabel = new AntdUI.Label();
             ipText = new Input();
             ipLabel = new AntdUI.Label();
+            menuStrip1 = new MenuStrip();
+            helpToolStripMenuItem = new ToolStripMenuItem();
+            quitToolStripMenuItem = new ToolStripMenuItem();
+            打开ToolStripMenuItem = new ToolStripMenuItem();
             logPanel.SuspendLayout();
             listPanel.SuspendLayout();
             infoPanel.SuspendLayout();
+            menuStrip1.SuspendLayout();
             SuspendLayout();
             // 
             // logPanel
             // 
+            logPanel.BackColor = Color.FromArgb(245, 247, 250);
             logPanel.Controls.Add(info);
             logPanel.Dock = DockStyle.Bottom;
-            logPanel.Location = new Point(0, 480);
+            logPanel.Location = new Point(0, 544);
             logPanel.Name = "logPanel";
-            logPanel.Size = new Size(1041, 190);
+            logPanel.Padding = new Padding(8);
+            logPanel.Size = new Size(1080, 150);
             logPanel.TabIndex = 0;
-            logPanel.Text = "panel1";
+            logPanel.Text = "info";
             // 
             // info
             // 
+            info.BackColor = Color.White;
+            info.BorderStyle = BorderStyle.None;
             info.Dock = DockStyle.Fill;
+            info.Font = new Font("Microsoft YaHei UI", 9F);
+            info.ForeColor = Color.FromArgb(51, 51, 51);
             info.FormattingEnabled = true;
             info.ItemHeight = 17;
-            info.Location = new Point(0, 0);
+            info.Location = new Point(8, 8);
+            info.Margin = new Padding(0);
             info.Name = "info";
-            info.Size = new Size(1041, 190);
+            info.Size = new Size(1064, 134);
             info.TabIndex = 0;
             // 
             // listPanel
             // 
+            listPanel.BackColor = Color.FromArgb(245, 247, 250);
             listPanel.Controls.Add(labelTime1);
             listPanel.Controls.Add(delBtn);
             listPanel.Controls.Add(addBtn);
             listPanel.Controls.Add(table1);
-            listPanel.Dock = DockStyle.Top;
-            listPanel.Location = new Point(0, 0);
+            listPanel.Dock = DockStyle.Fill;
+            listPanel.Location = new Point(0, 245);
             listPanel.Name = "listPanel";
-            listPanel.Size = new Size(1041, 191);
-            listPanel.TabIndex = 1;
-            listPanel.Text = "panel1";
+            listPanel.Padding = new Padding(12);
+            listPanel.Size = new Size(1080, 299);
+            listPanel.TabIndex = 2;
             // 
             // labelTime1
             // 
-            labelTime1.Location = new Point(12, 12);
+            labelTime1.Font = new Font("Microsoft YaHei UI", 12F, FontStyle.Bold);
+            labelTime1.ForeColor = Color.FromArgb(30, 136, 229);
+            labelTime1.Location = new Point(20, 20);
             labelTime1.Name = "labelTime1";
-            labelTime1.Size = new Size(75, 23);
+            labelTime1.Size = new Size(140, 30);
             labelTime1.TabIndex = 3;
-            labelTime1.Text = "labelTime1";
+            labelTime1.Text = "10:19:02";
             // 
             // delBtn
             // 
-            delBtn.Location = new Point(12, 121);
+            delBtn.Font = new Font("Microsoft YaHei UI", 9F, FontStyle.Bold);
+            delBtn.Location = new Point(20, 120);
             delBtn.Name = "delBtn";
-            delBtn.Size = new Size(75, 40);
+            delBtn.Size = new Size(140, 40);
             delBtn.TabIndex = 2;
             delBtn.Text = "删除设备";
             delBtn.Type = TTypeMini.Error;
+            delBtn.Click += delBtn_Click;
             // 
             // addBtn
             // 
-            addBtn.Location = new Point(12, 52);
+            addBtn.Font = new Font("Microsoft YaHei UI", 9F, FontStyle.Bold);
+            addBtn.Location = new Point(20, 60);
             addBtn.Name = "addBtn";
-            addBtn.Size = new Size(75, 39);
+            addBtn.Size = new Size(140, 40);
             addBtn.TabIndex = 1;
             addBtn.Text = "添加设备";
             addBtn.Type = TTypeMini.Primary;
@@ -130,15 +150,18 @@ namespace FanucDC
             // 
             // table1
             // 
-            table1.Dock = DockStyle.Right;
-            table1.Location = new Point(110, 0);
+            table1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            table1.BackColor = Color.White;
+            table1.Font = new Font("Microsoft YaHei UI", 9F);
+            table1.Location = new Point(180, 12);
             table1.Name = "table1";
-            table1.Size = new Size(931, 191);
+            table1.Size = new Size(888, 275);
             table1.TabIndex = 0;
             table1.Text = "设备列表";
             // 
             // infoPanel
             // 
+            infoPanel.BackColor = Color.White;
             infoPanel.Controls.Add(input11);
             infoPanel.Controls.Add(label11);
             infoPanel.Controls.Add(alarmText);
@@ -163,27 +186,29 @@ namespace FanucDC
             infoPanel.Controls.Add(programLabel);
             infoPanel.Controls.Add(ipText);
             infoPanel.Controls.Add(ipLabel);
-            infoPanel.Dock = DockStyle.Fill;
-            infoPanel.Location = new Point(0, 191);
+            infoPanel.Dock = DockStyle.Top;
+            infoPanel.Location = new Point(0, 25);
             infoPanel.Name = "infoPanel";
-            infoPanel.Size = new Size(1041, 289);
-            infoPanel.TabIndex = 2;
-            infoPanel.Text = "panel2";
+            infoPanel.Padding = new Padding(40, 20, 40, 20);
+            infoPanel.Size = new Size(1080, 220);
+            infoPanel.TabIndex = 1;
             // 
             // input11
             // 
             input11.Enabled = false;
-            input11.Location = new Point(749, 213);
+            input11.Location = new Point(730, 170);
             input11.Name = "input11";
-            input11.Size = new Size(162, 47);
+            input11.Size = new Size(180, 38);
             input11.TabIndex = 23;
             // 
             // label11
             // 
-            label11.BackColor = Color.White;
-            label11.Location = new Point(685, 213);
+            label11.BackColor = Color.Transparent;
+            label11.Font = new Font("Microsoft YaHei UI", 9F);
+            label11.ForeColor = Color.FromArgb(80, 80, 80);
+            label11.Location = new Point(640, 170);
             label11.Name = "label11";
-            label11.Size = new Size(58, 47);
+            label11.Size = new Size(80, 38);
             label11.TabIndex = 22;
             label11.Text = "选择IP";
             label11.TextAlign = ContentAlignment.MiddleRight;
@@ -191,17 +216,19 @@ namespace FanucDC
             // alarmText
             // 
             alarmText.Enabled = false;
-            alarmText.Location = new Point(458, 213);
+            alarmText.Location = new Point(430, 170);
             alarmText.Name = "alarmText";
-            alarmText.Size = new Size(162, 47);
+            alarmText.Size = new Size(180, 38);
             alarmText.TabIndex = 21;
             // 
             // alarmLabel
             // 
-            alarmLabel.BackColor = Color.White;
-            alarmLabel.Location = new Point(394, 213);
+            alarmLabel.BackColor = Color.Transparent;
+            alarmLabel.Font = new Font("Microsoft YaHei UI", 9F);
+            alarmLabel.ForeColor = Color.FromArgb(80, 80, 80);
+            alarmLabel.Location = new Point(340, 170);
             alarmLabel.Name = "alarmLabel";
-            alarmLabel.Size = new Size(58, 47);
+            alarmLabel.Size = new Size(80, 38);
             alarmLabel.TabIndex = 20;
             alarmLabel.Text = "告警状态";
             alarmLabel.TextAlign = ContentAlignment.MiddleRight;
@@ -209,17 +236,19 @@ namespace FanucDC
             // statusText
             // 
             statusText.Enabled = false;
-            statusText.Location = new Point(174, 213);
+            statusText.Location = new Point(130, 170);
             statusText.Name = "statusText";
-            statusText.Size = new Size(162, 47);
+            statusText.Size = new Size(180, 38);
             statusText.TabIndex = 19;
             // 
             // statusLabel
             // 
-            statusLabel.BackColor = Color.White;
-            statusLabel.Location = new Point(110, 213);
+            statusLabel.BackColor = Color.Transparent;
+            statusLabel.Font = new Font("Microsoft YaHei UI", 9F);
+            statusLabel.ForeColor = Color.FromArgb(80, 80, 80);
+            statusLabel.Location = new Point(40, 170);
             statusLabel.Name = "statusLabel";
-            statusLabel.Size = new Size(58, 47);
+            statusLabel.Size = new Size(80, 38);
             statusLabel.TabIndex = 18;
             statusLabel.Text = "当前状态";
             statusLabel.TextAlign = ContentAlignment.MiddleRight;
@@ -227,17 +256,19 @@ namespace FanucDC
             // circleText
             // 
             circleText.Enabled = false;
-            circleText.Location = new Point(749, 140);
+            circleText.Location = new Point(730, 120);
             circleText.Name = "circleText";
-            circleText.Size = new Size(162, 47);
+            circleText.Size = new Size(180, 38);
             circleText.TabIndex = 17;
             // 
             // circleLabel
             // 
-            circleLabel.BackColor = Color.White;
-            circleLabel.Location = new Point(685, 140);
+            circleLabel.BackColor = Color.Transparent;
+            circleLabel.Font = new Font("Microsoft YaHei UI", 9F);
+            circleLabel.ForeColor = Color.FromArgb(80, 80, 80);
+            circleLabel.Location = new Point(640, 120);
             circleLabel.Name = "circleLabel";
-            circleLabel.Size = new Size(58, 47);
+            circleLabel.Size = new Size(80, 38);
             circleLabel.TabIndex = 16;
             circleLabel.Text = "循环时间";
             circleLabel.TextAlign = ContentAlignment.MiddleRight;
@@ -245,17 +276,19 @@ namespace FanucDC
             // runText
             // 
             runText.Enabled = false;
-            runText.Location = new Point(458, 140);
+            runText.Location = new Point(430, 120);
             runText.Name = "runText";
-            runText.Size = new Size(162, 47);
+            runText.Size = new Size(180, 38);
             runText.TabIndex = 15;
             // 
             // runLabel
             // 
-            runLabel.BackColor = Color.White;
-            runLabel.Location = new Point(394, 140);
+            runLabel.BackColor = Color.Transparent;
+            runLabel.Font = new Font("Microsoft YaHei UI", 9F);
+            runLabel.ForeColor = Color.FromArgb(80, 80, 80);
+            runLabel.Location = new Point(340, 120);
             runLabel.Name = "runLabel";
-            runLabel.Size = new Size(58, 47);
+            runLabel.Size = new Size(80, 38);
             runLabel.TabIndex = 14;
             runLabel.Text = "运行时间";
             runLabel.TextAlign = ContentAlignment.MiddleRight;
@@ -263,17 +296,19 @@ namespace FanucDC
             // openText
             // 
             openText.Enabled = false;
-            openText.Location = new Point(174, 140);
+            openText.Location = new Point(130, 120);
             openText.Name = "openText";
-            openText.Size = new Size(162, 47);
+            openText.Size = new Size(180, 38);
             openText.TabIndex = 13;
             // 
             // openLabel
             // 
-            openLabel.BackColor = Color.White;
-            openLabel.Location = new Point(110, 140);
+            openLabel.BackColor = Color.Transparent;
+            openLabel.Font = new Font("Microsoft YaHei UI", 9F);
+            openLabel.ForeColor = Color.FromArgb(80, 80, 80);
+            openLabel.Location = new Point(40, 120);
             openLabel.Name = "openLabel";
-            openLabel.Size = new Size(58, 47);
+            openLabel.Size = new Size(80, 38);
             openLabel.TabIndex = 12;
             openLabel.Text = "开机时间";
             openLabel.TextAlign = ContentAlignment.MiddleRight;
@@ -281,17 +316,19 @@ namespace FanucDC
             // input5
             // 
             input5.Enabled = false;
-            input5.Location = new Point(749, 74);
+            input5.Location = new Point(730, 70);
             input5.Name = "input5";
-            input5.Size = new Size(162, 47);
+            input5.Size = new Size(180, 38);
             input5.TabIndex = 11;
             // 
             // label5
             // 
-            label5.BackColor = Color.White;
-            label5.Location = new Point(685, 74);
+            label5.BackColor = Color.Transparent;
+            label5.Font = new Font("Microsoft YaHei UI", 9F);
+            label5.ForeColor = Color.FromArgb(80, 80, 80);
+            label5.Location = new Point(640, 70);
             label5.Name = "label5";
-            label5.Size = new Size(58, 47);
+            label5.Size = new Size(80, 38);
             label5.TabIndex = 10;
             label5.Text = "选择IP";
             label5.TextAlign = ContentAlignment.MiddleRight;
@@ -299,17 +336,19 @@ namespace FanucDC
             // totalText
             // 
             totalText.Enabled = false;
-            totalText.Location = new Point(458, 74);
+            totalText.Location = new Point(430, 70);
             totalText.Name = "totalText";
-            totalText.Size = new Size(162, 47);
+            totalText.Size = new Size(180, 38);
             totalText.TabIndex = 9;
             // 
             // totalLabel
             // 
-            totalLabel.BackColor = Color.White;
-            totalLabel.Location = new Point(394, 74);
+            totalLabel.BackColor = Color.Transparent;
+            totalLabel.Font = new Font("Microsoft YaHei UI", 9F);
+            totalLabel.ForeColor = Color.FromArgb(80, 80, 80);
+            totalLabel.Location = new Point(340, 70);
             totalLabel.Name = "totalLabel";
-            totalLabel.Size = new Size(58, 47);
+            totalLabel.Size = new Size(80, 38);
             totalLabel.TabIndex = 8;
             totalLabel.Text = "总共数量";
             totalLabel.TextAlign = ContentAlignment.MiddleRight;
@@ -317,17 +356,19 @@ namespace FanucDC
             // currentText
             // 
             currentText.Enabled = false;
-            currentText.Location = new Point(174, 74);
+            currentText.Location = new Point(130, 70);
             currentText.Name = "currentText";
-            currentText.Size = new Size(162, 47);
+            currentText.Size = new Size(180, 38);
             currentText.TabIndex = 7;
             // 
             // currentLabel
             // 
-            currentLabel.BackColor = Color.White;
-            currentLabel.Location = new Point(110, 74);
+            currentLabel.BackColor = Color.Transparent;
+            currentLabel.Font = new Font("Microsoft YaHei UI", 9F);
+            currentLabel.ForeColor = Color.FromArgb(80, 80, 80);
+            currentLabel.Location = new Point(40, 70);
             currentLabel.Name = "currentLabel";
-            currentLabel.Size = new Size(58, 47);
+            currentLabel.Size = new Size(80, 38);
             currentLabel.TabIndex = 6;
             currentLabel.Text = "一次数量";
             currentLabel.TextAlign = ContentAlignment.MiddleRight;
@@ -335,17 +376,19 @@ namespace FanucDC
             // input2
             // 
             input2.Enabled = false;
-            input2.Location = new Point(749, 3);
+            input2.Location = new Point(730, 20);
             input2.Name = "input2";
-            input2.Size = new Size(162, 47);
+            input2.Size = new Size(180, 38);
             input2.TabIndex = 5;
             // 
             // label2
             // 
-            label2.BackColor = Color.White;
-            label2.Location = new Point(685, 3);
+            label2.BackColor = Color.Transparent;
+            label2.Font = new Font("Microsoft YaHei UI", 9F);
+            label2.ForeColor = Color.FromArgb(80, 80, 80);
+            label2.Location = new Point(640, 20);
             label2.Name = "label2";
-            label2.Size = new Size(58, 47);
+            label2.Size = new Size(80, 38);
             label2.TabIndex = 4;
             label2.Text = "选择IP";
             label2.TextAlign = ContentAlignment.MiddleRight;
@@ -353,17 +396,19 @@ namespace FanucDC
             // programText
             // 
             programText.Enabled = false;
-            programText.Location = new Point(458, 6);
+            programText.Location = new Point(430, 20);
             programText.Name = "programText";
-            programText.Size = new Size(162, 47);
+            programText.Size = new Size(180, 38);
             programText.TabIndex = 3;
             // 
             // programLabel
             // 
-            programLabel.BackColor = Color.White;
-            programLabel.Location = new Point(394, 6);
+            programLabel.BackColor = Color.Transparent;
+            programLabel.Font = new Font("Microsoft YaHei UI", 9F);
+            programLabel.ForeColor = Color.FromArgb(80, 80, 80);
+            programLabel.Location = new Point(340, 20);
             programLabel.Name = "programLabel";
-            programLabel.Size = new Size(58, 47);
+            programLabel.Size = new Size(80, 38);
             programLabel.TabIndex = 2;
             programLabel.Text = "程序名称";
             programLabel.TextAlign = ContentAlignment.MiddleRight;
@@ -371,36 +416,77 @@ namespace FanucDC
             // ipText
             // 
             ipText.Enabled = false;
-            ipText.Location = new Point(174, 6);
+            ipText.Location = new Point(130, 20);
             ipText.Name = "ipText";
-            ipText.Size = new Size(162, 47);
+            ipText.Size = new Size(180, 38);
             ipText.TabIndex = 1;
             // 
             // ipLabel
             // 
-            ipLabel.BackColor = Color.White;
-            ipLabel.Location = new Point(110, 6);
+            ipLabel.BackColor = Color.Transparent;
+            ipLabel.Font = new Font("Microsoft YaHei UI", 9F);
+            ipLabel.ForeColor = Color.FromArgb(80, 80, 80);
+            ipLabel.Location = new Point(40, 20);
             ipLabel.Name = "ipLabel";
-            ipLabel.Size = new Size(58, 47);
+            ipLabel.Size = new Size(80, 38);
             ipLabel.TabIndex = 0;
             ipLabel.Text = "选择IP";
             ipLabel.TextAlign = ContentAlignment.MiddleRight;
+            // 
+            // menuStrip1
+            // 
+            menuStrip1.BackColor = Color.FromArgb(245, 247, 250);
+            menuStrip1.Font = new Font("Microsoft YaHei UI", 9F);
+            menuStrip1.Items.AddRange(new ToolStripItem[] { helpToolStripMenuItem, 打开ToolStripMenuItem });
+            menuStrip1.Location = new Point(0, 0);
+            menuStrip1.Name = "menuStrip1";
+            menuStrip1.Size = new Size(1080, 25);
+            menuStrip1.TabIndex = 3;
+            menuStrip1.Text = "menuStrip1";
+            // 
+            // helpToolStripMenuItem
+            // 
+            helpToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { quitToolStripMenuItem });
+            helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+            helpToolStripMenuItem.Size = new Size(44, 21);
+            helpToolStripMenuItem.Text = "打开";
+            helpToolStripMenuItem.Click += helpToolStripMenuItem_Click;
+            // 
+            // quitToolStripMenuItem
+            // 
+            quitToolStripMenuItem.Name = "quitToolStripMenuItem";
+            quitToolStripMenuItem.Size = new Size(180, 22);
+            quitToolStripMenuItem.Text = "退出";
+            quitToolStripMenuItem.Click += quitToolStripMenuItem_Click;
+            // 
+            // 打开ToolStripMenuItem
+            // 
+            打开ToolStripMenuItem.Name = "打开ToolStripMenuItem";
+            打开ToolStripMenuItem.Size = new Size(44, 21);
+            打开ToolStripMenuItem.Text = "帮助";
             // 
             // IndexForm
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1041, 670);
-            Controls.Add(infoPanel);
+            BackColor = Color.White;
+            ClientSize = new Size(1080, 694);
             Controls.Add(listPanel);
+            Controls.Add(infoPanel);
             Controls.Add(logPanel);
+            Controls.Add(menuStrip1);
             Icon = (Icon)resources.GetObject("$this.Icon");
+            MainMenuStrip = menuStrip1;
             Name = "IndexForm";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "Fanuc DC";
             logPanel.ResumeLayout(false);
             listPanel.ResumeLayout(false);
             infoPanel.ResumeLayout(false);
+            menuStrip1.ResumeLayout(false);
+            menuStrip1.PerformLayout();
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -408,34 +494,39 @@ namespace FanucDC
         private AntdUI.Panel logPanel;
         private AntdUI.Panel listPanel;
         private AntdUI.Panel infoPanel;
-        private Table table1;
-        private LabelTime labelTime1;
+        private AntdUI.Table table1;
+        private AntdUI.LabelTime labelTime1;
         private AntdUI.Button delBtn;
         private AntdUI.Button addBtn;
         private AntdUI.Label ipLabel;
-        private Input ipText;
-        private Input input11;
+        private AntdUI.Input ipText;
+        private AntdUI.Input input11;
         private AntdUI.Label label11;
-        private Input alarmText;
+        private AntdUI.Input alarmText;
         private AntdUI.Label alarmLabel;
-        private Input statusText;
+        private AntdUI.Input statusText;
         private AntdUI.Label statusLabel;
-        private Input circleText;
+        private AntdUI.Input circleText;
         private AntdUI.Label circleLabel;
-        private Input runText;
+        private AntdUI.Input runText;
         private AntdUI.Label runLabel;
-        private Input openText;
+        private AntdUI.Input openText;
         private AntdUI.Label openLabel;
-        private Input input5;
+        private AntdUI.Input input5;
         private AntdUI.Label label5;
-        private Input totalText;
+        private AntdUI.Input totalText;
         private AntdUI.Label totalLabel;
-        private Input currentText;
+        private AntdUI.Input currentText;
         private AntdUI.Label currentLabel;
-        private Input input2;
+        private AntdUI.Input input2;
         private AntdUI.Label label2;
-        private Input programText;
+        private AntdUI.Input programText;
         private AntdUI.Label programLabel;
-        private ListBox info;
+        private System.Windows.Forms.ListBox info;
+        // 新增菜单控件声明
+        private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem quitToolStripMenuItem;
+        private ToolStripMenuItem 打开ToolStripMenuItem;
     }
 }

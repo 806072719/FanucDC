@@ -7,148 +7,156 @@ using System.Drawing;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace FanucDC
 {
     public partial class LoginForm : Form
     {
-
+        // 私有化构造辅助，避免重复创建
+        private static readonly MD5 _md5Provider = MD5.Create();
 
         public LoginForm()
         {
             InitializeComponent();
-            initPool();
+            // 初始化数据库连接池（启用，提升首次查询速度）
+            SqlServerPool.initConnectionPool();
+            // 固定窗体大小，禁止最大化
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
+            // 窗体居中显示
+            this.StartPosition = FormStartPosition.CenterScreen;
+            // 密码框默认密文显示
+            passwordText.PasswordChar = '*';
         }
 
-        private void initPool()
-        {
-            //SqlServerPool.initConnectionPool();
-        }
-
-
-
-        //private void loginBtn_Click(object sender, EventArgs e)
-        //{
-        //    string username = usernameText.Text;
-        //    if (username == null || "".Equals(username))
-        //    {
-        //        MessageBox.Show("用户名不能为空", "异常", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        //        return;
-        //    }
-        //    string password = passwordText.Text;
-        //    if (password == null || "".Equals(password))
-        //    {
-        //        MessageBox.Show("密码不能为空", "异常", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        //        return;
-        //    }
-
-        //    if ("jcjm".Equals(username) && "jm1234".Equals(password))
-        //    {
-        //        MainForm ui = new MainForm();
-        //        this.Visible = false;
-        //        ui.ShowDialog();//此处不可用Show()
-        //        this.Dispose();
-        //        this.Close();
-        //        //this.Close();
-        //    }
-        //    else
-        //    {
-        //        MessageBox.Show("用户名密码错误", "异常", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        //    }
-        //}
-
-
-
-        private void usernameLabel_Click(object sender, EventArgs e)
-        {
-
-        }
-
+        /// <summary>
+        /// 登录按钮点击事件（核心逻辑）
+        /// </summary>
         private void button2_Click(object sender, EventArgs e)
         {
-            string username = usernameText.Text;
-            if (username == null || "".Equals(username))
+            // 1. 获取并清洗输入数据
+            string username = usernameText.Text.Trim();
+            string password = passwordText.Text.Trim();
+
+            // 2. 非空校验（简化代码，友好提示+焦点定位）
+            if (string.IsNullOrEmpty(username))
             {
-                MessageBox.Show("用户名不能为空", "异常", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                ShowErrorTip("用户名不能为空！");
+                usernameText.Focus();
                 return;
             }
-            string password = passwordText.Text;
-            if (password == null || "".Equals(password))
+            if (string.IsNullOrEmpty(password))
             {
-                MessageBox.Show("密码不能为空", "异常", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                ShowErrorTip("密码不能为空！");
+                passwordText.Focus();
                 return;
             }
 
-
-
-            string querySql = "select username,password from _user_info where username = '" + username + "'";
-
-            var result = SqlServerPool.ExecuteQuery(querySql);
-
-            if (result == null || result.Length == 0)
+            try
             {
-                MessageBox.Show("用户名不存在", "异常", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-            else
-            {
-                // pAsswo0rd
-                string orp = MD5(password.Trim());
-                var uname = result.GetValue(0);
-                var pwd = result.GetValue(1);
-                if (orp.Equals(pwd.ToString()))
+                // 3. 参数化查询用户信息（彻底防SQL注入，适配改造后的SqlServerPool）
+                string querySql = "SELECT password FROM _user_info WHERE username = @Username";
+                var paramDict = new Dictionary<string, object>
                 {
-                    IndexForm ui = new IndexForm();
-                    ui.StartPosition = FormStartPosition.CenterParent;
-                    this.Visible = false;
-                    ui.ShowDialog();
-                    this.Dispose();
-                    this.Close();
+                    { "@Username", username }
+                };
+                var result = SqlServerPool.ExecuteQuery(querySql, paramDict);
+
+                // 4. 用户名不存在校验
+                if (result == null || result.Length == 0)
+                {
+                    ShowErrorTip("用户名不存在，请检查输入！");
+                    usernameText.SelectAll();// 选中输入框内容，方便用户修改
+                    return;
+                }
+
+                // 5. 密码加密（修复原ASCII编码Bug，改用UTF8，适配绝大多数场景）
+                string encryptPwd = MD5Encrypt(password);
+                // 6. 数据库密码获取（处理DBNull，避免空引用）
+                string dbPwd = result[0] == DBNull.Value ? string.Empty : result[0].ToString().Trim();
+
+                // 7. 密码校验
+                if (encryptPwd.Equals(dbPwd, StringComparison.OrdinalIgnoreCase))
+                {
+                    // 登录成功 - 隐藏登录窗体，打开主窗体
+                    LoginSuccessHandler();
                 }
                 else
                 {
-                    MessageBox.Show("密码错误" + orp + " " + pwd, "异常", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    ShowErrorTip("密码错误，请重新输入！");
+                    passwordText.SelectAll();
+                    passwordText.Focus();
                 }
             }
-        }
-
-
-
-        public static string MD5(string str)
-        {
-            // 1 创建MD5对象 c#提供了Cryptography类库中md5类生产md5对象
-            // Security 安全
-            MD5 md5 = System.Security.Cryptography.MD5.Create();
-
-            // 2 使用md5对象对i1进行加密处理  编码之后的字节数组。
-            byte[] bs = System.Text.Encoding.ASCII.GetBytes(str);
-
-            // 3 把字节数组通过md5进行加密ComputeHash
-            // Compute 计算
-            // Hash 哈希函数 
-            // y = x +1  x=0
-            byte[] hashS = md5.ComputeHash(bs);
-
-            //4 把数组转成字符串
-            StringBuilder s = new StringBuilder();//可变字符串
-            for (int i = 0; i < hashS.Length; i++)
-            {   //16进制0-15 ，0-9还是数字，
-                //ToString("X2")
-                //X代表是16进制，大写的X是代表大写16进制的
-                //小写的x代表的小写的16进制
-                //2  不足俩位的前面补0
-                //例如0x0A，如果没有2. 输出结果是0xA
-                s.Append(hashS[i].ToString("X2"));  //追加字符串 ，等同于+拼接字符串
+            catch (Exception ex)
+            {
+                // 全局异常捕获，避免程序崩溃，便于问题排查
+                ShowErrorTip($"登录失败：{ex.Message}");
             }
-            return s.ToString().ToLower();
         }
 
-        private void timer1_Tick(object sender, EventArgs e)
+        #region 私有工具方法（简化重复代码，提升可读性）
+        /// <summary>
+        /// 统一显示错误提示框
+        /// </summary>
+        private void ShowErrorTip(string tipText)
         {
+            MessageBox.Show(tipText, "登录异常", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
 
+        /// <summary>
+        /// 登录成功处理逻辑
+        /// </summary>
+        private void LoginSuccessHandler()
+        {
+            // 打开主窗体，居中显示
+            using (IndexForm mainForm = new IndexForm())
+            {
+                mainForm.StartPosition = FormStartPosition.CenterScreen;
+                // 隐藏登录窗体
+                this.Hide();
+                // 显示主窗体，关闭后主窗体释放资源
+                mainForm.ShowDialog();
+            }
+            // 主窗体关闭后，彻底关闭登录窗体
+            this.Close();
+        }
+
+        /// <summary>
+        /// MD5加密（修复原ASCII编码Bug，改用UTF8，静态复用MD5对象）
+        /// </summary>
+        /// <param name="str">需要加密的字符串</param>
+        /// <returns>32位小写MD5加密字符串</returns>
+        private string MD5Encrypt(string str)
+        {
+            if (string.IsNullOrEmpty(str)) return string.Empty;
+
+            // 改用UTF8编码，修复原ASCII编码对中文/特殊字符加密不一致的问题
+            byte[] inputBytes = Encoding.UTF8.GetBytes(str);
+            // 复用MD5对象，提升性能
+            byte[] hashBytes = _md5Provider.ComputeHash(inputBytes);
+
+            // 字节数组转32位小写MD5字符串
+            StringBuilder sb = new StringBuilder();
+            foreach (byte b in hashBytes)
+            {
+                sb.Append(b.ToString("x2")); // 小写x2，直接生成小写，无需后续ToLower()
+            }
+            return sb.ToString();
+        }
+        #endregion
+
+        #region 无用事件清理（移除空方法，精简代码）
+        private void usernameLabel_Click(object sender, EventArgs e) { }
+        private void timer1_Tick(object sender, EventArgs e) { }
+        #endregion
+
+        // 修复：移除重复的 Dispose 方法，改用 FormClosing 事件释放 MD5 资源
+        private void LoginForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            // 释放 MD5 资源，避免非托管资源泄漏
+            _md5Provider?.Dispose();
         }
     }
 }

@@ -12,9 +12,7 @@ namespace FanucDC
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            var loginForm = new LoginForm();
-
-            Application.Run(loginForm);
+            Application.Run(new LoginForm());
             //Application.Run(new MainForm());
         }
     }
